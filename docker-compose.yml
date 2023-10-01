@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api_image:/api_image
+    environment:
+      - DB_HOST=database
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASSWORD=password
+
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - database
+    networks:
+      - sharing_network_name
+
+  database:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: dbname
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: password
+    networks:
+      - sharing_network_name
+
+networks:
+  sharing_network_name:
+    external: false
